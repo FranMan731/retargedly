@@ -199,6 +199,7 @@ async function getFiles(dir) {
 function startGetMetrics(file) {
 	//Creo variable para guardar metricas
 	let metrics = [];
+	let suma = 0;
 
 	//Dirección del archivo
 	const fl = `${file}-metrics.json`;
@@ -208,31 +209,37 @@ function startGetMetrics(file) {
 	//Comienzo la lectura del archivo
 	fs.createReadStream(file).pipe(es.split()).pipe(
 		es
-			.mapSync((line) => {
+			.map((line, cb) => {
 				//Guardo en arr las líneas del archivo que están tabuladas
 				const arr = line.split('\t');
-				//Guardo en segments los segmentos separados por coma
-				const segments = arr[1].split(',');
-				//Guardo el country
-				const country = arr[2];
-
-				let suma = 0;
-				console.log(suma++);
 				
-				//Reccoro todos los segmentos
-				_.forEach(segments, (value, key) => {
-					//De cada segmento, le inserto un nuevo elemento con el segmento, y el país.
-					metrics.push({
-						segment: value,
-						country
+				//Hay lineas que estan vacias
+				if(line !== '') {
+					//Guardo en segments los segmentos separados por coma.
+					const segments = arr[1].split(',');
+					//Guardo el country
+					const country = arr[2];
+
+					//Reccoro todos los segmentos
+					_.forEach(segments, (value, key) => {
+						//De cada segmento, le inserto un nuevo elemento con el segmento, y el país.
+						metrics.push({
+							segment: value,
+							country
+						});
 					});
-				});
+				}
+
+				suma++
+				cb(null, line);
 			})
 			.on('error', (err) => {
+				console.log(err);
 				//Si llega haber algún error en el procesamiento, cambio el estado del archivo a failed
 				updateStatus(fl, 'failed', 'Fallo el procesamiento');
 			})
 			.on('end', () => {
+				console.log('End: ' + suma);
 				//r: creo un array de objetos compuesto poniendo como key a segment
 				let r = _.groupBy(metrics, (m) => m.segment);
 				//Creo variable response
