@@ -216,6 +216,9 @@ function startGetMetrics(file) {
 				//Guardo el country
 				const country = arr[2];
 
+				let suma = 0;
+				console.log(suma++);
+				
 				//Reccoro todos los segmentos
 				_.forEach(segments, (value, key) => {
 					//De cada segmento, le inserto un nuevo elemento con el segmento, y el país.
