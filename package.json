@@ -18,7 +18,7 @@
     "filesize": "^4.2.1",
     "formidable": "^1.2.1",
     "jwt-simple": "^0.5.6",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "mongoose": "^5.7.1"
   },
